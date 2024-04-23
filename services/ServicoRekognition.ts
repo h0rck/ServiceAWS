@@ -30,19 +30,18 @@ import { fromIni } from "@aws-sdk/credential-providers";
 /**
  * Uma classe que fornece métodos para interagir com os serviços da AWS, Amazon Rekognition.
  */
-export class ServicosAWS {
+export class ServicoRekognition {
 
     private REGION = ""; // Defina a região da AWS apropriada
-    private profileName = ""; // Nome do perfil AWS para autenticação
+    private perfilName = ""; // Nome do perfil AWS para autenticação
     private bucketName = ""; // Nome do bucket S3 utilizado, se aplicável
     private rekogClient: RekognitionClient; // Cliente Rekognition
 
 
     constructor() {
-        // Inicializa o cliente Rekognition com as credenciais e região especificadas
         this.rekogClient = new RekognitionClient({
             region: this.REGION,
-            credentials: fromIni({ profile: this.profileName }),
+            credentials: fromIni({ profile: this.perfilName }),
         });
     }
 
@@ -81,7 +80,7 @@ export class ServicosAWS {
      * @param imagem O buffer da imagem na qual os rostos serão detectados.
      * @returns Uma Promise que resolve com um objeto DetectFacesCommandOutput contendo as informações dos rostos detectados.
      */
-    async existePossoaNaImagem(imagem: Buffer): Promise<DetectFacesCommandOutput| void> {
+    async existePessoaNaImagem(imagem: Buffer): Promise<DetectFacesCommandOutput| void> {
 
         try {
             const params = {
@@ -106,7 +105,7 @@ export class ServicosAWS {
      * @param collectionName O nome da coleção a ser criada.
      * @returns Uma Promise que resolve com um objeto CreateCollectionCommandOutput se a criação for bem-sucedida, caso contrário, retorna void.
      */
-        public async createCollection(collectionName: string): Promise<CreateCollectionCommandOutput | void> {
+        public async criaCollection(collectionName: string): Promise<CreateCollectionCommandOutput | void> {
             try {
                 const params = {
                     CollectionId: collectionName,
@@ -178,7 +177,7 @@ export class ServicosAWS {
          * @param image O buffer da imagem contendo o rosto a ser adicionado.
          * @returns Uma Promise que resolve com um objeto IndexFacesCommandOutput se a adição for bem-sucedida, caso contrário, retorna void.
          */
-        public async addFaceToCollection(CollectionId: string, image: Buffer): Promise<IndexFacesCommandOutput | void> {
+        public async addFaceCollection(CollectionId: string, image: Buffer): Promise<IndexFacesCommandOutput | void> {
             try {
                 const params = {
                     CollectionId,
@@ -202,7 +201,7 @@ export class ServicosAWS {
      * @returns Uma Promise que resolve com um objeto CreateUserCommandOutput se a criação for bem-sucedida, caso contrário, retorna void.
      * O usuarid tem que receber uma letra e um numero pra funcionar (ralei pra descobrir isso)
      */
-       public async criarUsuario(CollectionId: string, UserId: string): Promise<CreateUserCommandOutput | void> {
+       public async criaUsuario(CollectionId: string, UserId: string): Promise<CreateUserCommandOutput | void> {
         try {
             const params = {
                 CollectionId,
@@ -223,7 +222,7 @@ export class ServicosAWS {
      * @param CollectionId O ID da coleção a ser excluída.
      * @returns Uma Promise que resolve com um objeto DeleteCollectionCommandOutput se a exclusão for bem-sucedida, caso contrário, retorna void.
      */
-    public async deleteCollection(CollectionId: string): Promise<DeleteCollectionCommandOutput | void> {
+    public async deletaCollection(CollectionId: string): Promise<DeleteCollectionCommandOutput | void> {
         try {
             const command = new DeleteCollectionCommand({ CollectionId });
             const response = await this.rekogClient.send(command);
@@ -239,7 +238,7 @@ export class ServicosAWS {
      * @param FaceIds Os IDs dos rostos a serem removidos.
      * @returns Uma Promise que resolve com um objeto DeleteFacesCommandOutput se a remoção for bem-sucedida, caso contrário, retorna void.
      */
-    public async deleteFacesFromCollection(CollectionId: string, FaceIds: string[]): Promise<DeleteFacesCommandOutput | void> {
+    public async deletaFacesDoCollection(CollectionId: string, FaceIds: string[]): Promise<DeleteFacesCommandOutput | void> {
         try {
             const params = {
                 CollectionId,
@@ -260,7 +259,7 @@ export class ServicosAWS {
      * @param UserId O ID do usuário a ser excluído.
      * @returns Uma Promise que resolve com um objeto DeleteUserCommandOutput se a exclusão for bem-sucedida, caso contrário, retorna void.
      */
-    public async deleteUser(CollectionId: string, UserId: string): Promise<DeleteUserCommandOutput | void> {
+    public async deletaUser(CollectionId: string, UserId: string): Promise<DeleteUserCommandOutput | void> {
         try {
             const params = {
                 CollectionId,
@@ -281,7 +280,7 @@ export class ServicosAWS {
      * @param UserId O ID do usuário ao qual o rosto será associado.
      * @returns Uma Promise que resolve com um objeto AssociateFacesCommandOutput se a associação for bem-sucedida, caso contrário, retorna void.
      */
-    public async associateFaces(CollectionId: string, FaceId: string, UserId: string): Promise<AssociateFacesCommandOutput | void> {
+    public async associaFaces(CollectionId: string, FaceId: string, UserId: string): Promise<AssociateFacesCommandOutput | void> {
         try {
             const params = {
                 CollectionId,
