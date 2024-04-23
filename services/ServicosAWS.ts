@@ -28,7 +28,7 @@ import {
 import { fromIni } from "@aws-sdk/credential-providers";
 
 /**
- * Uma classe que fornece métodos para interagir com os serviços da AWS, como Amazon Rekognition.
+ * Uma classe que fornece métodos para interagir com os serviços da AWS, Amazon Rekognition.
  */
 export class ServicosAWS {
 
@@ -37,9 +37,7 @@ export class ServicosAWS {
     private bucketName = ""; // Nome do bucket S3 utilizado, se aplicável
     private rekogClient: RekognitionClient; // Cliente Rekognition
 
-    /**
-     * Cria uma instância da classe ServicosAWS.
-     */
+
     constructor() {
         // Inicializa o cliente Rekognition com as credenciais e região especificadas
         this.rekogClient = new RekognitionClient({
@@ -55,28 +53,26 @@ export class ServicosAWS {
      * @returns Uma Promise que resolve com um objeto CompareFacesCommandOutput se a comparação for bem-sucedida, caso contrário, retorna void.
      */
     public async ComparaComImagemNoBucket(imagemLocal: Buffer, caminhoDaImagem: string): Promise<CompareFacesCommandOutput | void> {
-        // Parâmetros para a comparação de rostos
-        const params = {
-            SourceImage: {
-                Bytes: imagemLocal
-            },
-            TargetImage: {
-                S3Object: {
-                    Bucket: this.bucketName,
-                    Name: caminhoDaImagem
-                }
-            },
-            SimilarityThreshold: 85
-        };
-
+   
         try {
-            // Cria um novo comando de comparação de rostos com os parâmetros especificados
+            const params = {
+                SourceImage: {
+                    Bytes: imagemLocal
+                },
+                TargetImage: {
+                    S3Object: {
+                        Bucket: this.bucketName,
+                        Name: caminhoDaImagem
+                    }
+                },
+                SimilarityThreshold: 85
+            };
+
             const command = new CompareFacesCommand(params);
-            // Envia o comando para o serviço Amazon Rekognition e aguarda a resposta
             const response = await this.rekogClient.send(command);
-            return response; // Retorna a resposta da comparação de rostos
-        } catch (error) {
-            console.error('Erro ao comparar rostos:', error); // Registra qualquer erro que ocorra durante a comparação de rostos
+            return response; 
+        } catch (err) {
+            console.error('Erro ao comparar rostos:', err);
         }
     }
 
@@ -85,15 +81,24 @@ export class ServicosAWS {
      * @param imagem O buffer da imagem na qual os rostos serão detectados.
      * @returns Uma Promise que resolve com um objeto DetectFacesCommandOutput contendo as informações dos rostos detectados.
      */
-    async existePossoaNaImagem(imagem: Buffer): Promise<DetectFacesCommandOutput> {
-        const params = {
-            Image: {
-                Bytes: imagem
-            }
-        };
-        const command = new DetectFacesCommand(params);
-        const response = await this.rekogClient.send(command);
-        return response;
+    async existePossoaNaImagem(imagem: Buffer): Promise<DetectFacesCommandOutput| void> {
+
+        try {
+            const params = {
+                Image: {
+                    Bytes: imagem
+                }
+            };
+
+            const command = new DetectFacesCommand(params);
+            const response = await this.rekogClient.send(command);
+
+            return response;
+        }catch(err:any){
+            console.error(err)
+        }
+        
+        
     }
 
         /**
@@ -119,10 +124,15 @@ export class ServicosAWS {
          * Lista todas as coleções criadas no Amazon Rekognition.
          * @returns Uma Promise que resolve com um objeto ListCollectionsCommandOutput contendo as informações das coleções.
          */
-        public async listaCollections(): Promise<ListCollectionsCommandOutput> {
-            const command = new ListCollectionsCommand({});
-            const response = await this.rekogClient.send(command);
-            return response;
+        public async listaCollections(): Promise<ListCollectionsCommandOutput | void> {
+            try{
+                const command = new ListCollectionsCommand({});
+                const response = await this.rekogClient.send(command);
+                return response;
+            }catch(err: any){
+                console.log(err)
+            }
+            
         }
     
         /**
